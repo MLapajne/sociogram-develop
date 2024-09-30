@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import CustomFormRender from "./customFormRender";
 import ConfirmationDialog from "./ConfirmationDialog";
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { postFormData } from "../features/formPost/formPostSlice";
 import { SubmitDataContext } from "../context/SubmitDataContext";
 import { getTranslations } from "../helpers/translations";
@@ -40,6 +40,8 @@ const questionsComponent: React.FC<PosQuestionProps> = ({
   const { languageData, setLanguageData } = useContext(LanguageDataContext);
   const [dialogPrompt, setDialogPrompt] = useState("");
 
+  const projectState = useAppSelector((state) => state.formPost);
+
   const [translations, setTranslations] = useState(
     getTranslations(languageData)
   );
@@ -49,6 +51,13 @@ const questionsComponent: React.FC<PosQuestionProps> = ({
     setTranslations(newTranslations);
   }, [languageData]);
 
+/*
+  useEffect(() => {
+    if (projectState.isSuccess && !projectState.isLoading) {
+      window.location.reload();
+    }
+  }, [projectState.isSuccess, projectState.isLoading]);
+*/
   const FormSchema = z.object({
     items: z.array(z.string()).refine(
       (value) => {
@@ -104,6 +113,7 @@ const questionsComponent: React.FC<PosQuestionProps> = ({
     if (finalPostData) {
       dispatch(postFormData(finalPostData));
       navigate("/thank-you");
+      //window.location.reload();
     }
   };
   const handleAccept = () => {
